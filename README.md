@@ -5,17 +5,72 @@ Based on Mesa PanVK, running on the phone's stock Mali kernel driver (kbase). No
 
 > ⚠️ **Beta.** Expect bugs. Personal project — not affiliated with Arm, Mesa or Collabora.
 
-## Tested device
-| Device | SoC | GPU | Android | Stock driver |
+## Device compatibility
+
+### How it works (short version)
+Mali GPUs come in generations. What matters for this driver is **how the GPU receives work from the kernel**:
+
+| Family | Arch | Job interface | Examples | This driver |
 |---|---|---|---|---|
-| POCO M6 Pro (2312FPCA6G) | MediaTek Helio G99 (MT6789) | Mali-G57 MC2 | 16 | Mali (kbase, JM) |
+| Bifrost | v6 / v7 | JM (Job Manager) | G71, G72, G52, G76 | Built in, untested |
+| **Valhall gen 1** | **v9** | **JM (Job Manager)** | **G57**, G68, G77, G78 | **Target** |
+| Valhall gen 2+ | v10+ | CSF (Command Stream) | G310, G510, G610, G710, G615, G715, Immortalis | Not supported |
 
-## Should work (same GPU, not tested yet)
-Phones with a **Mali-G57 MC2 / MP2** GPU:
+This driver talks to the phone's **stock Mali kernel driver (kbase)** using the JM interface. CSF GPUs use a completely different interface, so they will not work.
 
-- **MediaTek Helio:** G96, G99, G100, G200
-- **MediaTek Dimensity:** 700, 810, 6020, 6080, 6100+, 6300, 6400
-- **UNISOC:** T750, T765 (T8200), T7300, T8300, T9300
+### ✅ Tested
+| Phone | SoC | GPU | Android | Result |
+|---|---|---|---|---|
+| POCO M6 Pro | Helio G99 (MT6789) | Mali-G57 MC2 | 16 | Works (Far Cry 3 ~18-25 FPS, Low) |
+
+### 🟢 Likely to work: same GPU (Mali-G57), untested
+The same GPU as the tested device. The main risk is a different kbase version or vendor changes to the kernel driver.
+- **Helio G99**: Redmi Note 13 Pro 4G, Redmi Note 12S, Galaxy A15 4G, and many Infinix / Tecno / realme phones
+- **Helio G96**
+- **Dimensity** 700 / 720 / 800U / 810 / 6020 / 6080 / 6100+
+- **Unisoc** T616
+
+### 🟡 Might work: same family (Valhall v9 / JM), different GPU, untested
+Same architecture, but core count and hardware details differ. Google Tensor and Exynos may also ship modified kbase drivers.
+- **Mali-G68**: Dimensity 900 / 920 / 1080 / 7050, Exynos 1280
+- **Mali-G77**: Dimensity 1000 / 1100 / 1200
+- **Mali-G78**: Exynos 1080 / 2100, Google Tensor G1 (Pixel 6), Kirin 9000
+
+### 🟠 Long shot: Bifrost (JM), untested
+Older architecture. Built into this driver and uses the same JM path, but has never been tested on real hardware.
+- **Mali-G52**: Helio G80 / G85 / G88, Exynos 850, Kirin 810, Unisoc T618
+- **Mali-G76**: Helio G90T / G95, Exynos 9820, Kirin 990
+- **Mali-G71 / G72** (v6): Exynos 8890 / 9810, Kirin 960 / 970, Helio P60 / P70 (very old phones, may not run current Winlator)
+
+### ❌ Not supported
+- **CSF GPUs** (Mali-G310 / G510 / G610 / G710 / G615 / G715, Immortalis): different job interface
+- **Midgard** (Mali-T series): not supported by PanVK
+- **Adreno** (Snapdragon): use Turnip instead
+
+## Mali driver version (kbase)
+Your phone's stock Mali driver has a version like `r44p1` or `r54p1`. It changes with system updates.
+
+- This driver has only been tested on **r54p1**.
+- Very old kbase versions may fail to load or have missing features.
+- You can usually see the version in GPU info apps (e.g. AIDA64, Device Info HW) or in a Vulkan info app while using the stock driver (look for something like `v1.r54p1`).
+
+## About extension count
+You may notice the number of Vulkan extensions differs from your stock driver (for example 68, 98, 114 or 148 depending on the stock driver version).
+
+**Extension count is not a performance score.**
+- Once installed, this driver reports what **PanVK actually supports** on the GPU, not what the stock Arm driver reports.
+- All Mali-G57 phones should see the same (or very close) number with this driver, whatever the stock number was.
+- Games and DXVK only need specific extensions. If those are present, the total number doesn't matter.
+- Extensions are added when real games need them, not to inflate a number. Advertising extensions that don't really work leads to crashes and broken graphics.
+
+## Help us test
+If you try this driver on any device, please open an [Issue](../../issues) with:
+- Phone model
+- SoC and GPU (e.g. Helio G99 / Mali-G57 MC2)
+- Android version
+- Mali driver version (e.g. r54p1)
+- Winlator version and DXVK version
+- Game(s) tested, FPS, and whether it works / crashes / has graphics bugs
 
 Different vendors ship different kbase versions, so please report your result — working or not.
 
