@@ -54,7 +54,21 @@ Verify the download: its `sha256sum` must match `SHA256.txt` on the release page
 ## Report a problem
 Open an **[Issue](../../issues)** with: phone model / SoC, driver version (first log line),
 Winlator / Wine / DXVK version, game name, what happened, and the log file.
+## Vulkan wrapper (Winlator)
+| Wrapper | Status |
+|---|---|
+| [leegao/bionic-vulkan-wrapper](https://github.com/leegao/bionic-vulkan-wrapper) (latest) | ✅ **recommended** — best quality |
+| Winlator Ludashi built-in wrapper | ✅ works, lower quality |
+| Other wrappers | ✅ several tested and working, but lower quality than leegao's |
 
+## Credits
+This driver stands on the work of others — thank you:
+
+- **[Mesa](https://mesa3d.org) / PanVK** — Collabora and the Mesa contributors (the Vulkan driver itself)
+- **[leegao/mesa-funnymdzz](https://github.com/leegao/mesa-funnymdzz/tree/ci/src)** — the Mesa PanVK Android tree this driver is built from
+- **[Vtgamer998/MESA-KMOD](https://github.com/Vtgamer998/MESA-KMOD)** — the kbase backend that lets Mesa run on the stock Mali kernel driver
+- **[leegao/bionic-vulkan-wrapper](https://github.com/leegao/bionic-vulkan-wrapper)** — the Vulkan wrapper used for testing
+  
 ## License
 MIT (see `LICENSE`). Built on [Mesa](https://mesa3d.org) — Mesa's own license applies to
 its code and is included in eevery zip (`LICENSE-Mesa.txt`).
