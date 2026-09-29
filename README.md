@@ -79,12 +79,12 @@ and DXVK 1.10.3 doesn't need them.
 | *(unnamed)* | Helio G100 Ultra | Mali-G57 MC2 | r32p | ✅ DXVK 1.11 / 1.12 work |
 | *(unnamed)* | Dimensity 6080 | Mali-G57 MC2 | r32p1 | ✅ Works (Hades reboots the device) |
 | Oppo A38 | Helio G85 | Mali-G52 r1 MC2 | r49.1 | ✅ D3D9/10/11 + Zink (automatic stride detection in 1.1.0) |
+| *(unnamed)* | Kompanio 1300T | Mali-G77 MC9 | r32p1 | ✅ Prince of Persia (2008) with DXVK 2.3.1-gplasync ~30 FPS |
 
 ### Partly working / in progress
 
 | Device | SoC | GPU | Status |
 |---|---|---|---|
-| *(unnamed)* | Kompanio 1300T | Mali-G77 MC9 | ⚠️ Works partly; high RAM use in PvZ Replanted |
 | Redmi Note 12 Pro 5G | Dimensity 1080 | Mali-G68 MC4 | ⚠️ Recognized since 1.1.0; Black Mesa stuck on loading |
 | Poco M5s | Helio G95 | Mali-G76 MC4 | ⚠️ Loads, freezes on GPU info |
 | *(unnamed)* | — | Mali-G76 MC4 | ⚠️ Loads (61 → 137 extensions), no game results yet |
@@ -158,6 +158,7 @@ This driver stands on the work of many people. Thank you!
 | **Noysz** / [panvk-g99-jm](https://github.com/Noysz/panvk-g99-jm) | Valhall v9 / Job Manager groundwork (included in the base we started from); also our reference for the v9 draw path |
 | **Vtgamer998** (MESA-KMOD) | kbase kernel-interface work |
 | **mexicanbr0auth** / [mesa-panvk-g57](https://github.com/mexicanbr0auth/mesa-panvk-g57) | PanVK/kbase work for Mali-G57; parts of our code came from this project |
+| **wonderkast02** / [panvk-g720-kbase-csf](https://github.com/wonderkast02/panvk-g720-kbase-csf) | Community PanVK-over-kbase work (Mali-G720, CSF) |
 | **LukeValen** / [0x8055/panvk-g52-oppo-a38](https://github.com/0x8055/panvk-g52-oppo-a38) | Mali-G52 on Oppo A38 research |
 | **BossDrk** | Mali-G52 (Oppo A38) testing: found and verified the 56-byte stride fix |
 | **Claude** (AI assistant by Anthropic) | Development help, debugging and code review; audited the code origin and helped write this credit list |
