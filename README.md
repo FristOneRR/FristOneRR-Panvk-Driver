@@ -21,12 +21,26 @@ can run through Vulkan without the stock Mali driver.
 
 ---
 
-## Installation
+## Installation (step by step)
 
-1. Download `Panvk-Mali-G57-beta_1.1.0.zip` from [Releases](../../releases).
-2. In Winlator (Ludashi, Bannerlator, …) open **Contents / Drivers → Install** and choose the zip.
-3. In your container settings, set the Vulkan driver to **Panvk-Mali-G57-beta_1.1.0**.
-4. Pick a wrapper and DXVK version from the table below.
+**What you need**
+- A Mali phone from the [compatibility list](#device-compatibility).
+- A Winlator build that can **install custom Vulkan drivers** (adrenotools), for example **Winlator Ludashi** or **Bannerlator**.
+  Some forks (e.g. some "Winlator Mali" builds) have no driver install option. They can't load this driver.
+
+**Steps**
+1. Download `Panvk-Mali-G57-beta_1.1.0.zip` from [Releases](../../releases). **Don't unzip it.**
+2. Open Winlator → **Contents / Drivers → Install**, then pick the **zip file itself**.
+3. Open your container's settings (**Edit container**) and set the graphics driver to **Wrapper**.
+   In the wrapper/driver settings, choose **Panvk-Mali-G57-beta_1.1.0** as the Vulkan driver.
+4. Pick the wrapper and DXVK version from the [DirectX table](#directx-support) below.
+5. Start the container and check it's working: open **AIO Graphics Test → GPU Info**. The GPU should show as **Mali-…** with about **130+ extensions**.
+   The extension count shown in the driver menu does **not** change; only GPU Info inside a running container shows the real number.
+
+**Troubleshooting**
+- *"Error" when installing the zip:* make sure you picked the original zip (not an extracted folder or a re-zipped copy).
+- *No install button:* your Winlator build doesn't support custom drivers. Use Ludashi or Bannerlator.
+- *A game crashes on start:* try turning **off BCn texture emulation** in the wrapper settings.
 
 ---
 
@@ -56,7 +70,7 @@ and DXVK 1.10.3 doesn't need them.
 > - **D3D9 with DXVK 2.x / 3.x → use the app's built-in "Wrapper original".**
 >   **Do NOT use the leegao wrapper with DXVK 2.x+.** It crashes on the first frame: the FPS counter flashes, then the app closes.
 > - **D3D11 → use DXVK 1.10.3 + the leegao wrapper.** Wrapper original doesn't support D3D11 yet.
-> - **Other wrappers are not supported yet.** This will be fixed in future updates.
+> - **Other wrappers:** users report that DXVK 2.x/3.x also works (slower, with some bugs) on **Bannerlator**, **Ludashi** and the **GameNative** wrapper. Pipetto-crypto's wrapper is untested.
 
 | Wrapper | Recommended for |
 |---|---|
@@ -80,6 +94,7 @@ and DXVK 1.10.3 doesn't need them.
 | *(unnamed)* | Dimensity 6080 | Mali-G57 MC2 | r32p1 | ✅ Works (Hades reboots the device) |
 | Oppo A38 | Helio G85 | Mali-G52 r1 MC2 | r49.1 | ✅ D3D9/10/11 + Zink (automatic stride detection in 1.1.0) |
 | *(unnamed)* | Kompanio 1300T | Mali-G77 MC9 | r32p1 | ✅ Prince of Persia (2008) with DXVK 2.3.1-gplasync ~30 FPS |
+| Redmi Note 10S | Helio G95 | Mali-G76 MC4 | r26p0 | ✅ NFS Underground 2 runs (~15 FPS, stock ~60); GTA III (re3) freezes on loading; 57 → 135 extensions |
 
 ### Partly working / in progress
 
@@ -87,6 +102,8 @@ and DXVK 1.10.3 doesn't need them.
 |---|---|---|---|
 | Redmi Note 12 Pro 5G | Dimensity 1080 | Mali-G68 MC4 | ⚠️ Recognized since 1.1.0; Black Mesa stuck on loading |
 | Poco M5s | Helio G95 | Mali-G76 MC4 | ⚠️ Loads, freezes on GPU info |
+| Samsung Galaxy A15 5G | Dimensity 6100+ | Mali-G57 MC2 | ⚠️ Works on Bannerlator; Resident Evil 4 renders incorrectly |
+| Xiaomi Redmi 13C | Helio G85 | Mali-G52 MC2 | ⚠️ Hangs on GPU Info with 1.0.0 (1.1.0 should fix it: automatic stride detection) |
 | *(unnamed)* | — | Mali-G76 MC4 | ⚠️ Loads (61 → 137 extensions), no game results yet |
 | Samsung F07 | — | — | ⚠️ Dark Souls crashes during shader compile (log pending) |
 
@@ -104,7 +121,7 @@ and DXVK 1.10.3 doesn't need them.
 | Family | GPUs | Status |
 |---|---|---|
 | Valhall v9 (Job Manager) | G57, G68, G77, G78 | ✅ Main target |
-| Bifrost v7 | G52, G76 | ⚠️ Some devices work |
+| Bifrost v7 | G52, G76 | ✅ Confirmed on G52 r1 and G76 MC4 (slower than Valhall, DXVK 1.x only) |
 | Bifrost v6 | G71, G72 | ❔ Untested |
 | Valhall 5th gen (CSF) | G610, G710, G615, Immortalis | ❌ Not supported |
 | Midgard | T-series | ❌ Not supported |
@@ -125,12 +142,14 @@ and DXVK 1.10.3 doesn't need them.
 
 ## Known issues
 
+- DXVK 2.x on Mali-G57: some games show graphics glitches (e.g. speckled textures).
 - D3D11 doesn't work with *Wrapper original* (use DXVK 1.10.3 + leegao).
 - DXVK 2.x + leegao wrapper crashes on the first frame (use *Wrapper original* for D3D9).
 - DXVK 2.5+: the HUD text is squashed into one line. Rendering itself is fine.
 - D3D12 (vkd3d-proton) runs but draws nothing, then closes.
 - Tomb Raider 2013 is much slower than on the stock driver.
 - Some Mali-G76 devices (Helio G95) freeze on start.
+- Bifrost (G52/G76): DXVK 2.x doesn't start yet (robustness2 is only enabled on Valhall v9 so far).
 
 ---
 
@@ -144,6 +163,8 @@ Open an [Issue](../../issues) and include:
 4. Logs:
    - **Wine log:** enable Wine debug in the container settings, then attach `wine_debug.log`.
    - **DXVK log:** set `DXVK_LOG_LEVEL=info` **and** `DXVK_LOG_PATH=C:\` (without `DXVK_LOG_PATH` the file may not be written).
+
+Use an existing issue for the same device or game instead of opening a new one. Videos can't be attached directly, so upload them (YouTube, Google Drive…) and post the link.
 
 ---
 
