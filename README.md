@@ -1,129 +1,175 @@
-# FristOneRR — Vulkan driver for Mali-G57 (Winlator / DXVK)
+# FristOneRR PanVK Driver for Mali (kbase)
 
-Vulkan driver for Mali-G57 on Android, for PC games through Winlator + DXVK.
-Based on Mesa PanVK, running on the phone's stock Mali kernel driver (kbase). No root needed.
+An open-source Vulkan driver (Mesa **PanVK**) for Mali GPUs on Android phones that use
+Arm's vendor **kbase** kernel driver. It is built for **Winlator** and **DXVK**, so Windows games
+can run through Vulkan without the stock Mali driver.
 
-> ⚠️ **Beta.** Expect bugs. Personal project — not affiliated with Arm, Mesa or Collabora.
+> **Status: beta.** It works well on many Helio G99 / Mali-G57 devices, but it is not a
+> conformant Vulkan implementation. Expect bugs and please report them.
+
+**Source code:** [FristOneRR-Admin/FristOneRR-Panvk-Source](https://github.com/FristOneRR-Admin/FristOneRR-Panvk-Source)
+
+---
+
+## What's new in beta 1.1.0
+
+- **DXVK 2.x and 3.x now work for D3D9** (tested 2.0 → 3.1.1). Needs the app's built-in *Wrapper original*; see [Wrappers](#wrappers).
+- **Mali-G52 on older kernels (e.g. Oppo A38, kbase r49):** the driver now detects the job-submit layout by itself. The special s56 build is no longer needed.
+- **Mali-G52 r1** is now shown by name instead of "Mali unknown 0x74021000".
+- **Lower RAM use:** about **112 MB less per Vulkan device**, a big help on 4–6 GB phones.
+- G68 (Dimensity 1080) and G77 / G78 are recognized by name.
+
+---
+
+## Installation
+
+1. Download `Panvk-Mali-G57-beta_1.1.0.zip` from [Releases](../../releases).
+2. In Winlator (Ludashi, Bannerlator, …) open **Contents / Drivers → Install** and choose the zip.
+3. In your container settings, set the Vulkan driver to **Panvk-Mali-G57-beta_1.1.0**.
+4. Pick a wrapper and DXVK version from the table below.
+
+---
+
+## DirectX support
+
+| API | DXVK 1.10.3 + leegao wrapper | DXVK 2.0 – 3.1.1 + Wrapper original | vkd3d-proton |
+|---|:---:|:---:|:---:|
+| **D3D9**  | ✅ | ✅ | — |
+| **D3D10** | ❔ untested | ❌ | — |
+| **D3D11** | ✅ | ❌ | — |
+| **D3D12** | — | — | ❌ |
+
+**Tested DXVK builds for D3D9:** 2.0, 2.3-gplasync, 2.3.1, 2.4.1, 2.5.3, 2.6.2,
+2.6.2-gplasync, 2.6.2-arm64ec-gplasync, 2.7.1, 3.1.1
+
+**Why D3D10/11 still need DXVK 1.10.3:** DXVK 2.x requires tessellation, transform feedback
+and geometry shaders. Mali Valhall v9 (G57/G68/G77/G78) doesn't have these in hardware yet,
+and DXVK 1.10.3 doesn't need them.
+
+**Unity games (D3D11):** if you see *"Failed to initialize player"*, try **DXVK-Sarek**.
+
+---
+
+## Wrappers
+
+> ⚠️ **Important**
+> - **D3D9 with DXVK 2.x / 3.x → use the app's built-in "Wrapper original".**
+>   **Do NOT use the leegao wrapper with DXVK 2.x+.** It crashes on the first frame: the FPS counter flashes, then the app closes.
+> - **D3D11 → use DXVK 1.10.3 + the leegao wrapper.** Wrapper original doesn't support D3D11 yet.
+> - **Other wrappers are not supported yet.** This will be fixed in future updates.
+
+| Wrapper | Recommended for |
+|---|---|
+| **leegao** (bionic-vulkan-wrapper) | DXVK 1.10.3: D3D9 / D3D11 |
+| **Wrapper original** (built into the app) | DXVK 2.x / 3.x: D3D9 |
+| Bannerlator | Fallback (ships the leegao wrapper) |
+
+---
 
 ## Device compatibility
 
-### How it works (short version)
-Mali GPUs come in generations. What matters for this driver is **how the GPU receives work from the kernel**:
+### Confirmed by real users
 
-| Family | Arch | Job interface | Examples | This driver |
+| Device | SoC | GPU | kbase | Result |
 |---|---|---|---|---|
-| Bifrost | v6 / v7 | JM (Job Manager) | G71, G72, G52, G76 | Built in, untested |
-| **Valhall gen 1** | **v9** | **JM (Job Manager)** | **G57**, G68, G77, G78 | **Target** |
-| Valhall gen 2+ | v10+ | CSF (Command Stream) | G310, G510, G610, G710, G615, G715, Immortalis | Not supported |
+| Poco M6 Pro 4G *(dev device)* | Helio G99 | Mali-G57 MC2 | — | ✅ Full test suite; NFS Most Wanted 50–70 FPS |
+| Samsung Galaxy A15 | Helio G99 | Mali-G57 MC2 | r54p1 | ✅ Tomb Raider Anniversary faster than stock; Tomb Raider 2013 slow |
+| Realme 10 4G | Helio G99 | Mali-G57 MC2 | — | ✅ NFS Hot Pursuit 2010 at 25–30 FPS |
+| Infinix Note 50 Pro | Helio G100 Ultimate | Mali-G57 MC2 | — | ✅ 66 → 144 extensions |
+| *(unnamed)* | Helio G100 Ultra | Mali-G57 MC2 | r32p | ✅ DXVK 1.11 / 1.12 work |
+| *(unnamed)* | Dimensity 6080 | Mali-G57 MC2 | r32p1 | ✅ Works (Hades reboots the device) |
+| Oppo A38 | Helio G85 | Mali-G52 r1 MC2 | r49.1 | ✅ D3D9/10/11 + Zink (automatic stride detection in 1.1.0) |
 
-This driver talks to the phone's **stock Mali kernel driver (kbase)** using the JM interface. CSF GPUs use a completely different interface, so they will not work.
+### Partly working / in progress
 
-### ✅ Tested
-| Phone | SoC | GPU | Android | Result |
-|---|---|---|---|---|
-| POCO M6 Pro | Helio G99 (MT6789) | Mali-G57 MC2 | 16 | Works (Far Cry 3 ~18-25 FPS, Low) |
+| Device | SoC | GPU | Status |
+|---|---|---|---|
+| *(unnamed)* | Kompanio 1300T | Mali-G77 MC9 | ⚠️ Works partly; high RAM use in PvZ Replanted |
+| Redmi Note 12 Pro 5G | Dimensity 1080 | Mali-G68 MC4 | ⚠️ Recognized since 1.1.0; Black Mesa stuck on loading |
+| Poco M5s | Helio G95 | Mali-G76 MC4 | ⚠️ Loads, freezes on GPU info |
+| *(unnamed)* | — | Mali-G76 MC4 | ⚠️ Loads (61 → 137 extensions), no game results yet |
+| Samsung F07 | — | — | ⚠️ Dark Souls crashes during shader compile (log pending) |
 
-### 🟢 Likely to work: same GPU (Mali-G57), untested
-The same GPU as the tested device. The main risk is a different kbase version or vendor changes to the kernel driver.
-- **Helio G99**: Redmi Note 13 Pro 4G, Redmi Note 12S, Galaxy A15 4G, and many Infinix / Tecno / realme phones
-- **Helio G96**
-- **Dimensity** 700 / 720 / 800U / 810 / 6020 / 6080 / 6100+
-- **Unisoc** T616
+### Not working
 
-### 🟡 Might work: same family (Valhall v9 / JM), different GPU, untested
-Same architecture, but core count and hardware details differ. Google Tensor and Exynos may also ship modified kbase drivers.
-- **Mali-G68**: Dimensity 900 / 920 / 1080 / 7050, Exynos 1280
-- **Mali-G77**: Dimensity 1000 / 1100 / 1200
-- **Mali-G78**: Exynos 1080 / 2100, Google Tensor G1 (Pixel 6), Kirin 9000
+| Device | SoC | GPU | Note |
+|---|---|---|---|
+| Samsung Galaxy Tab S9 FE+ | **Exynos 1380** | Mali-G68 MP5 | ❌ Does not load |
 
-### 🟠 Long shot: Bifrost (JM), untested
-Older architecture. Built into this driver and uses the same JM path, but has never been tested on real hardware.
-- **Mali-G52**: Helio G80 / G85 / G88, Exynos 850, Kirin 810, Unisoc T618
-- **Mali-G76**: Helio G90T / G95, Exynos 9820, Kirin 990
-- **Mali-G71 / G72** (v6): Exynos 8890 / 9810, Kirin 960 / 970, Helio P60 / P70 (very old phones, may not run current Winlator)
+> **Samsung phones:** Samsung devices with **MediaTek** chips (e.g. Galaxy A15) work.
+> **Samsung Exynos** chips are **not supported yet** (tested: Exynos 1380).
 
-### ❌ Not supported
-- **CSF GPUs** (Mali-G310 / G510 / G610 / G710 / G615 / G715, Immortalis): different job interface
-- **Midgard** (Mali-T series): not supported by PanVK
-- **Adreno** (Snapdragon): use Turnip instead
+### By GPU family
 
-## Mali driver version (kbase)
-Your phone's stock Mali driver has a version like `r44p1` or `r54p1`. It changes with system updates.
-
-- This driver has only been tested on **r54p1**.
-- Very old kbase versions may fail to load or have missing features.
-- You can usually see the version in GPU info apps (e.g. AIDA64, Device Info HW) or in a Vulkan info app while using the stock driver (look for something like `v1.r54p1`).
-
-## About extension count
-You may notice the number of Vulkan extensions differs from your stock driver (for example 68, 98, 114 or 148 depending on the stock driver version).
-
-**Extension count is not a performance score.**
-- Once installed, this driver reports what **PanVK actually supports** on the GPU, not what the stock Arm driver reports.
-- All Mali-G57 phones should see the same (or very close) number with this driver, whatever the stock number was.
-- Games and DXVK only need specific extensions. If those are present, the total number doesn't matter.
-- Extensions are added when real games need them, not to inflate a number. Advertising extensions that don't really work leads to crashes and broken graphics.
-
-## Help us test
-If you try this driver on any device, please open an [Issue](../../issues) with:
-- Phone model
-- SoC and GPU (e.g. Helio G99 / Mali-G57 MC2)
-- Android version
-- Mali driver version (e.g. r54p1)
-- Winlator version and DXVK version
-- Game(s) tested, FPS, and whether it works / crashes / has graphics bugs
-
-Different vendors ship different kbase versions, so please report your result — working or not.
-
-## Install
-1. Download the latest `.zip` from **[Releases](../../releases)**.
-2. Winlator → install the zip as a Vulkan/graphics driver (same way as Turnip zips).
-3. Select **FristOneRR** in the container's graphics driver setting.
-4. The first line of the Wine log should read `FristOneRR vXX (Mesa ...)`.
-
-Verify the download: its `sha256sum` must match `SHA256.txt` on the release page.
-
-## DXVK
-| Version | Status |
-|---|---|
-| DXVK 1.5.5 | ✅ works |
-| DXVK-Sarek 1.11 | ✅ works (vkcube OK) — Far Cry 3 crashes at start with Sarek, use DXVK 1.10.3 for it |
-| DXVK 1.10.3 | ✅ works (recommended) |
-| DXVK 2.x | ❓ not tested yet — planned for the next update |
-
-## Tested games
-| Game | API | Result |
+| Family | GPUs | Status |
 |---|---|---|
-| Far Cry 3 | D3D9 | ✅ playable, ~18–25 FPS (Low settings) |
-| Borderlands | D3D9 | ✅ playable |
-| Need for Speed: Most Wanted (2005) | D3D9 | ✅ playable |
+| Valhall v9 (Job Manager) | G57, G68, G77, G78 | ✅ Main target |
+| Bifrost v7 | G52, G76 | ⚠️ Some devices work |
+| Bifrost v6 | G71, G72 | ❔ Untested |
+| Valhall 5th gen (CSF) | G610, G710, G615, Immortalis | ❌ Not supported |
+| Midgard | T-series | ❌ Not supported |
+| Samsung Exynos | any | ❌ Not supported yet |
 
-## Options (environment variables)
-| Variable | Default | Effect |
+---
+
+## Environment variables (advanced)
+
+| Variable | Default | What it does |
 |---|---|---|
-| `PANVK_OVERLAP=0` | on | turn off vertex/pixel overlap (if you see glitches) |
-| `PANVK_AFBC=1` | off | enable AFBC compression (currently slower) |
-| `PANVK_SPILL_NOOPT=0` | on | turn off the fix for GPU hangs in heavy shaders |
-| `PANVK_SKIP_FS=1` | off | skip very heavy shaders (last resort for hangs) |
-| `PANVK_TILER_HEAP_MB=256` | 512 | smaller GPU heap if RAM is low |
+| `PANVK_ATOM_STRIDE` | auto | Force the job-submit stride: `64` or `56`. Only set this if auto-detection fails (you see `[KFAULT]` in the log). |
+| `PANVK_POLY_HEAP_MB` | `16` | Geometry/tessellation scratch heap (4–512). Raise it only if a game draws missing geometry. |
+| `PANVK_TILER_HEAP_MB` | `512` | Tiler heap limit (16–2048). Lower values may save RAM in heavy games. |
+| `PANVK_TRACE` | off | `1` prints driver debug output to the Wine log. |
 
-## Report a problem
-Open an **[Issue](../../issues)** with: phone model / SoC, driver version (first log line),
-Winlator / Wine / DXVK version, game name, what happened, and the log file.
-## Vulkan wrapper (Winlator)
-| Wrapper | Status |
-|---|---|
-| [leegao/bionic-vulkan-wrapper](https://github.com/leegao/bionic-vulkan-wrapper) (latest) | ✅ **recommended** — best quality |
-| Winlator Ludashi built-in wrapper | ✅ works, lower quality |
-| Other wrappers | ✅ several tested and working, but lower quality than leegao's |
+---
+
+## Known issues
+
+- D3D11 doesn't work with *Wrapper original* (use DXVK 1.10.3 + leegao).
+- DXVK 2.x + leegao wrapper crashes on the first frame (use *Wrapper original* for D3D9).
+- DXVK 2.5+: the HUD text is squashed into one line. Rendering itself is fine.
+- D3D12 (vkd3d-proton) runs but draws nothing, then closes.
+- Tomb Raider 2013 is much slower than on the stock driver.
+- Some Mali-G76 devices (Helio G95) freeze on start.
+
+---
+
+## How to report a problem
+
+Open an [Issue](../../issues) and include:
+
+1. Phone model, SoC, GPU and kbase version (shown in AIO Graphics Test → GPU Info).
+2. Winlator build, wrapper, DXVK version, Box64/FEX version.
+3. What happens (black screen, crash, freeze, low FPS…).
+4. Logs:
+   - **Wine log:** enable Wine debug in the container settings, then attach `wine_debug.log`.
+   - **DXVK log:** set `DXVK_LOG_LEVEL=info` **and** `DXVK_LOG_PATH=C:\` (without `DXVK_LOG_PATH` the file may not be written).
+
+---
 
 ## Credits
-This driver stands on the work of others — thank you:
 
-- **[Mesa](https://mesa3d.org) / PanVK** — Collabora and the Mesa contributors (the Vulkan driver itself)
-- **[leegao/mesa-funnymdzz](https://github.com/leegao/mesa-funnymdzz/tree/ci/src)** — the Mesa PanVK Android tree this driver is built from
-- **[Vtgamer998/MESA-KMOD](https://github.com/Vtgamer998/MESA-KMOD)** — the kbase backend that lets Mesa run on the stock Mali kernel driver
-- **[leegao/bionic-vulkan-wrapper](https://github.com/leegao/bionic-vulkan-wrapper)** — the Vulkan wrapper used for testing
-  
+This driver stands on the work of many people. Thank you!
+
+| Who | Contribution |
+|---|---|
+| **Mesa / PanVK developers** (Collabora, Arm and contributors) | The PanVK Vulkan driver this project is built on |
+| **funnymdzz** (mesa fork) & **leegao** | The Mesa source used as our base; bionic Vulkan wrapper; advice throughout the project |
+| **Noysz** / [panvk-g99-jm](https://github.com/Noysz/panvk-g99-jm) | Valhall v9 / Job Manager groundwork (included in the base we started from); also our reference for the v9 draw path |
+| **Vtgamer998** (MESA-KMOD) | kbase kernel-interface work |
+| **mexicanbr0auth** / [mesa-panvk-g57](https://github.com/mexicanbr0auth/mesa-panvk-g57) | PanVK/kbase work for Mali-G57; parts of our code came from this project |
+| **LukeValen** / [0x8055/panvk-g52-oppo-a38](https://github.com/0x8055/panvk-g52-oppo-a38) | Mali-G52 on Oppo A38 research |
+| **BossDrk** | Mali-G52 (Oppo A38) testing: found and verified the 56-byte stride fix |
+| **Claude** (AI assistant by Anthropic) | Development help, debugging and code review; audited the code origin and helped write this credit list |
+| **All testers** who opened issues and sent logs | Device reports and game results |
+
+**Code origin (measured at 1.1.0):** of the 1,669 lines we added on top of Mesa, **67 %** don't appear anywhere else, **3.6 %** match mexicanbr0auth, **2.4 %** match Noysz and **0.7 %** match LukeValen; the rest is Mesa code we moved or reused. Full table, per-file details, an apology for the missing credits in 1.0.0, and a script to re-check it yourself are in the [source repository](https://github.com/FristOneRR-Admin/FristOneRR-Panvk-Source).
+
+> **Credits update (1.1.0):** beta 1.0.0 was released without these credits. That was my mistake as a first-time GitHub user, and I'm sorry. The credits above were added on the day the source code was published.
+
+---
+
 ## License
-MIT (see `LICENSE`). Built on [Mesa](https://mesa3d.org) — Mesa's own license applies to
-its code and is included in eevery zip (`LICENSE-Mesa.txt`).
+
+The driver is built from Mesa (MIT license; see `LICENSE-Mesa.txt` in the zip).
+This repository is licensed under the MIT License.
