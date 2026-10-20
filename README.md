@@ -4,7 +4,7 @@ An open-source Vulkan driver (Mesa **PanVK**) for Mali GPUs on Android phones th
 Arm's vendor **kbase** kernel driver. It is built for **Winlator** and **DXVK**, so Windows games
 can run through Vulkan without the stock Mali driver.
 
-> **Status: 2.0-rc1.** It works well on many Mali phones, but it is not a conformant Vulkan
+> **Status: 3.0.** It works well on many Mali phones, but it is not a conformant Vulkan
 > implementation. Expect bugs and please report them.
 
 ---
@@ -17,28 +17,27 @@ To check that your file is the original, compare its SHA256 with the table below
 
 | File | SHA256 |
 |---|---|
-| `Panvk-Mali-G57-2.0-rc1.zip` (driver) | `2ad19e7b97f7cdb57cddee96d476400bee0aad77486cec6b2434ebc537089d53` |
-| `libvulkan_panfrost.so` (inside the driver zip) | `eb7e56c3125e4a1dab3800d5fa27f5d8956d5861a23dbaa1fd76279422a1babb` |
-| `FristOneRR-Wrapper-2.0.zip` ([wrapper](https://github.com/FristOneRR-Admin/FristOneRR-Wrapperv1)) | `8e3254fff8d0604d4e30b5586683827beb387aa4cd229d50e3ce4ae3c3ee0686` |
-| `FristOneRR-Wrapper-2.0.tzst` (same wrapper, tzst package) | `0f7bde510d5f902f3295c847ebabc7d95183b9b82f98bf114b9cd3e4f0dd2980` |
-| `libvulkan_wrapper.so` (inside the wrapper zip / tzst) | `ab4f32ad587d635dd56a8886519697dbe957e6ead2229086dd00310f9ab20a89` |
+| `Panvk-Mali-G57-3.0.zip` (driver) | `6c5f00cb39a7330e1840547a9b4dcb8d3bc9b6d939a2977592769c46908c0ac2` |
+| `libvulkan_panfrost.so` (inside the driver zip) | `8761b79bc62bbc41ce2e0f7987f90a856ebd3d1b6351f2dfb628e678d6d9d4ab` |
+| `FristOneRR-Wrapper-3.0.zip` ([wrapper](https://github.com/FristOneRR-Admin/FristOneRR-Wrapperv1)) | `6bbfe5b252df2ea038e7bb8b360b59b11107da3465ed1d951e97fba4449e9d41` |
+| `FristOneRR-Wrapper-3.0.tzst` (same wrapper, tzst package) | `3d039d0669fdbb869c8493780afd57f9168d2891126755ecbb944d99fc8c63f5` |
+| `libvulkan_wrapper.so` (inside the wrapper zip / tzst) | `f9350e6b0c936f383f160b20a379ef714bce8e8e89752472d4f087cca480acfb` |
 
 If the SHA256 is different, the file is not ours. Don't install it.
 
 ---
 
-## What's new in 2.0-rc1
+## What's new in 3.0
 
-- **D3D8, D3D9, D3D10 and D3D11 work for both 32-bit and 64-bit games** (with FristOneRR-Wrapper 2.0).
-- **D3D12** starts but isn't complete yet. It is being worked on for the next update.
-- **Mali-G52 on older kernels (e.g. Oppo A38, kbase r49):** the job stride is now detected
-  automatically. `PANVK_ATOM_STRIDE=56` is no longer needed.
-- **Black triangles / missing light** in some games: can be fixed with `PANVK_STENCIL_LATE=1` (off by default, see [Environment variables](#environment-variables-advanced)).
-- **Faster:** fragment shader constants are read from registers instead of memory, and occlusion
-  queries no longer split the render pass (Tomb Raider benchmark at 720p: 12 → 24–31 FPS on Mali-G57 MC2).
-- DXVK 2.x works without extra settings: the driver doesn't advertise graphics pipeline libraries
-  by default (same as `dxvk.enableGraphicsPipelineLibrary = False`).
-- **New: [FristOneRR-Wrapper 2.0](https://github.com/FristOneRR-Admin/FristOneRR-Wrapperv1)**: 32-bit games and better BCn texture handling.
+- **D3D12 works** through vkd3d-proton (with FristOneRR-Wrapper 3.0).
+- **Black triangles fixed** in some games.
+- **Mali-G52 bug fixes.** DXVK 2.x still doesn't start on Bifrost (G52 / G76 / G72); use DXVK 1.x. This is planned for the next update.
+- **Emulators:** the same driver zip now also works in **Switch, PS2, PS3 and PS4 emulators** that can install
+  custom GPU drivers. See [Emulators](#emulators) for what works.
+- **BC4–BC7 textures are handled inside the driver**, so emulators no longer need BCn hidden. BC4/BC5 textures use less RAM.
+- **Crash fixes:** changing the resolution in a game, loading a new level in emulators, and games that use many textures in one draw.
+- **New: [FristOneRR-Wrapper 3.0](https://github.com/FristOneRR-Admin/FristOneRR-Wrapperv1)** with D3D12 support and a
+  one-click installer (`install.bat`).
 
 ---
 
@@ -49,12 +48,13 @@ If the SHA256 is different, the file is not ours. Don't install it.
 - An app from the [supported apps](#supported-apps) list.
 
 **Steps**
-1. Download `Panvk-Mali-G57-2.0-rc1.zip` from [Releases](../../releases). **Don't unzip it.**
+1. Download `Panvk-Mali-G57-3.0.zip` from [Releases](../../releases). **Don't unzip it.**
 2. Open Winlator → **Contents / Drivers → Install**, then pick the **zip file itself**.
 3. Open your container's settings (**Edit container**) and set the graphics driver to **Wrapper**.
-   In the wrapper/driver settings, choose **Panvk-Mali-G57-2.0-rc1** as the Vulkan driver.
-4. Install **FristOneRR-Wrapper 2.0** (see [Wrapper](#wrapper)) and pick a DXVK version.
-5. Start the container and check it's working: open **AIO Graphics Test → GPU Info**. The GPU should show as **Mali-…** with about **130+ extensions**.
+   In the wrapper/driver settings, choose **Panvk-Mali-G57-3.0** as the Vulkan driver.
+4. Install **FristOneRR-Wrapper 3.0** (see [Wrapper](#wrapper)) and pick a DXVK version (and vkd3d-proton for D3D12 games).
+5. After every driver update, clear the shader cache (DXVK / vkd3d cache files of your games).
+6. Start the container and check it's working: open **AIO Graphics Test → GPU Info**. The GPU should show as **Mali-…** with about **130+ extensions**.
    The extension count shown in the driver menu does **not** change; only GPU Info inside a running container shows the real number.
 
 **Troubleshooting**
@@ -82,7 +82,7 @@ Some Winlator forks have no option to install custom drivers. They can't load th
 
 ## DirectX support
 
-With **FristOneRR-Wrapper 2.0** and DXVK:
+With **FristOneRR-Wrapper 3.0**, DXVK (D3D8–D3D11) and vkd3d-proton (D3D12):
 
 | API | 64-bit games | 32-bit games |
 |---|:---:|:---:|
@@ -90,7 +90,7 @@ With **FristOneRR-Wrapper 2.0** and DXVK:
 | **D3D9**  | ✅ | ✅ |
 | **D3D10** | ✅ | ✅ |
 | **D3D11** | ✅ | ✅ |
-| **D3D12** (vkd3d-proton) | ⚠️ not complete yet, next update | ⚠️ |
+| **D3D12** (vkd3d-proton) | ✅ | ✅ |
 
 **Vulkan test programs** (for example the *Vulkan cube* in AIO Graphics Test) are not a target of
 this driver. If they fail, that doesn't mean games won't work. Test with the D3D tests or a real game.
@@ -99,18 +99,54 @@ this driver. If they fail, that doesn't mean games won't work. Test with the D3D
 
 ## Wrapper
 
-**Use [FristOneRR-Wrapper 2.0](https://github.com/FristOneRR-Admin/FristOneRR-Wrapperv1)** with this driver.
-It is made for FristOneRR PanVK and supports 32-bit and 64-bit games.
+**Use [FristOneRR-Wrapper 3.0](https://github.com/FristOneRR-Admin/FristOneRR-Wrapperv1)** with this driver.
+It is made for FristOneRR PanVK and supports 32-bit and 64-bit games and D3D12.
 
-**Installing it:** it is not installed through the driver menu. Two packages, same wrapper:
-- `FristOneRR-Wrapper-2.0.zip`: extract `libvulkan_wrapper.so` and copy it into the container at
-  **`Z:\usr\lib\`**, replacing the existing file (keep a backup).
-- `FristOneRR-Wrapper-2.0.tzst`: for apps that install wrappers from a `.tzst` file
-  (contains `usr/lib/libvulkan_wrapper.so`). Step-by-step guide:
-[FristOneRR-Wrapper](https://github.com/FristOneRR-Admin/FristOneRR-Wrapperv1#install).
+### Easy install (recommended): `install.bat`
+
+1. Download `FristOneRR-Wrapper-3.0.zip` and **extract it** into a folder the container can see
+   (for example your phone's `Download` folder, which is usually drive **D:** in Winlator).
+   Keep `install.bat`, `restore.bat` and `libvulkan_wrapper.so` together in the same folder.
+2. Start the container, open that folder in the Wine file manager and **double-click `install.bat`**.
+   - The first time, it saves the app's own wrapper to `Z:\usr\lib\FristOneRR-backup\`.
+   - Then it installs FristOneRR-Wrapper 3.0. Wait for **"Done"** and press a key.
+3. **Close the container and start it again.** The new wrapper is loaded on the next start.
+
+To go back to the app's own wrapper, double-click **`restore.bat`** and restart the container.
+Running `install.bat` again later (for example after `restore.bat`) keeps the first backup; it never overwrites it.
+
+### Other ways to install
+
+- **`FristOneRR-Wrapper-3.0.tzst`:** for apps that install wrappers from a `.tzst` file
+  (contains `usr/lib/libvulkan_wrapper.so`).
+- **By hand:** copy `libvulkan_wrapper.so` from the zip into the container at **`Z:\usr\lib\`**,
+  replacing the existing file (keep a backup).
+
+More details: [FristOneRR-Wrapper](https://github.com/FristOneRR-Admin/FristOneRR-Wrapperv1#install).
 
 Other wrappers (leegao, Ludashi built-in, GameNative, Bannerlator) can also load the driver, but
 they are not tuned for it.
+
+---
+
+## Emulators
+
+The driver zip can also be installed in emulators that have a **custom GPU driver** option
+(install the zip itself, the same way as in Winlator). This is for people who want to test.
+Results on Mali-G57 MC2:
+
+| Emulator | Status |
+|---|---|
+| **PS2** | ✅ **Recommended.** Plays well; some games may stutter. |
+| **Switch** | ⚠️ Partly works. Connects, and some games are playable. |
+| **PS3** | ❌ Not recommended. Beyond what Mali-G57 can do. |
+| **PS4** | ❌ Not recommended. Beyond what Mali-G57 can do. |
+
+**Tips**
+- Clear the emulator's shader cache after installing a new driver.
+- Heavy Switch games are limited by the CPU: lowering the resolution doesn't raise the FPS in gameplay.
+- Switch emulators can't set environment variables, so the driver uses its default settings there.
+- Changing the resolution inside the emulator now works without a crash.
 
 ---
 
@@ -178,11 +214,12 @@ Your phone isn't listed? Try it and tell us the result in an [Issue](../../issue
 
 ## Known issues
 
-- D3D12 (vkd3d-proton) is not complete yet (next update).
+- Some heavy D3D12 games can hang while loading. Use the game's D3D11 mode for now; a fix is planned for 3.5.
 - Some games show graphics glitches or wrong / blocky textures.
 - Games that use geometry or tessellation shaders may draw incorrectly.
 - BCn → ASTC texture conversion can freeze or reboot the phone. Set BCn to "none".
-- Bifrost (G52 / G76 / G72): DXVK 2.x doesn't start yet; use DXVK 1.x.
+- Bifrost (G52 / G76 / G72): DXVK 2.x doesn't start yet; use DXVK 1.x (next update).
+- Switch emulators: after a pause, the picture can look too bright / blue until the next level.
 - Bannerlator's **"surfaceflinger"** render option shows wrong colors (blue sky turns red). Use the default renderer.
 - DXVK 2.5+: the DXVK HUD text is squashed into one line. Rendering itself is fine.
 - Heavy games can still be slower than on the stock driver.
@@ -221,73 +258,6 @@ This driver stands on the work of many people. Thank you!
 | **All testers** who opened issues and sent logs | Device reports and game results |
 
 **Code origin (measured at 1.1.0):** of the 1,669 lines we added on top of Mesa, **67 %** don't appear anywhere else, **3.6 %** match mexicanbr0auth, **2.4 %** match Noysz and **0.7 %** match BossDrk's 0x8055 repository; the rest is Mesa code we moved or reused. Full table, per-file details and a script to re-check it yourself are in the [source repository](https://github.com/FristOneRR-Admin/FristOneRR-Panvk-Source).
-
----
-
-## License
-
-The driver is built from Mesa (MIT license; see `LICENSE-Mesa.txt` in the zip).
-This repository is licensed under the MIT License.
-1024–3072) | GPU memory reported to games (256–16384). Raise it only if a heavy game says it lacks video memory; lower it if Android kills the app. |
-| `PANVK_TRACE` | off | `1` prints driver debug output to the Wine log. |
-
-> ⚠️ **Only use the variables in this table.** The driver has other internal `PANVK_*` switches
-> for development and testing. Setting them can break rendering, lower FPS or crash games.
-
----
-
-## Known issues
-
-- DXVK 2.x on Mali-G57: some games show graphics glitches (e.g. speckled textures).
-- D3D11 doesn't work with *Wrapper original* (use FristOneRR-Wrapperv1 or DXVK 1.10.3 + leegao).
-- FristOneRR-Wrapperv1 doesn't work with 32-bit games yet.
-- Games that use geometry or tessellation shaders may draw incorrectly on DXVK 2.x D3D11.
-- BCn → ASTC texture conversion can freeze or reboot the phone. Set BCn to "none".
-- AIO Graphics Test *Vulkan* cube may report "present mode not supported".
-- DXVK 2.x + leegao wrapper crashes on the first frame (use *Wrapper original* for D3D9).
-- DXVK 2.5+: the HUD text is squashed into one line. Rendering itself is fine.
-- D3D12 (vkd3d-proton) runs but draws nothing, then closes.
-- Tomb Raider 2013 is much slower than on the stock driver.
-- Some Mali-G76 devices (Helio G95) freeze on start.
-- Bifrost (G52/G76): DXVK 2.x doesn't start yet (robustness2 is only enabled on Valhall v9 so far).
-
----
-
-## How to report a problem
-
-Open an [Issue](../../issues) and include:
-
-1. Phone model, SoC, GPU and kbase version (shown in AIO Graphics Test → GPU Info).
-2. Winlator build, wrapper, DXVK version, Box64/FEX version.
-3. What happens (black screen, crash, freeze, low FPS…).
-4. Logs:
-   - **Wine log:** enable Wine debug in the container settings, then attach `wine_debug.log`.
-   - **DXVK log:** set `DXVK_LOG_LEVEL=info` **and** `DXVK_LOG_PATH=C:\` (without `DXVK_LOG_PATH` the file may not be written).
-
-Use an existing issue for the same device or game instead of opening a new one. Videos can't be attached directly, so upload them (YouTube, Google Drive…) and post the link.
-
----
-
-## Credits
-
-This driver stands on the work of many people. Thank you!
-
-| Who | Contribution |
-|---|---|
-| **Mesa / PanVK developers** (Collabora, Arm and contributors) | The PanVK Vulkan driver this project is built on |
-| **funnymdzz** (mesa fork) & **leegao** | The Mesa source used as our base; [bionic-vulkan-wrapper](https://github.com/leegao/bionic-vulkan-wrapper), which FristOneRR-Wrapperv1 is built on; advice throughout the project |
-| **Noysz** / [panvk-g99-jm](https://github.com/Noysz/panvk-g99-jm) | Valhall v9 / Job Manager groundwork (included in the base we started from); also our reference for the v9 draw path |
-| **Vtgamer998** (MESA-KMOD) | kbase kernel-interface work |
-| **mexicanbr0auth** / [mesa-panvk-g57](https://github.com/mexicanbr0auth/mesa-panvk-g57) | PanVK/kbase work for Mali-G57; parts of our code came from this project |
-| **wonderkast02** / [panvk-g720-kbase-csf](https://github.com/wonderkast02/panvk-g720-kbase-csf) | Community PanVK-over-kbase work (Mali-G720, CSF) |
-| **BossDrk** / [0x8055/panvk-g52-oppo-a38](https://github.com/0x8055/panvk-g52-oppo-a38) | Mali-G52 on Oppo A38 research and testing: found and verified the 56-byte stride fix |
-| **LukeValen** | Mali-G52 research |
-| **Claude** (AI assistant by Anthropic) | Development help, debugging and code review; audited the code origin and helped write this credit list |
-| **All testers** who opened issues and sent logs | Device reports and game results |
-
-**Code origin (measured at 1.1.0):** of the 1,669 lines we added on top of Mesa, **67 %** don't appear anywhere else, **3.6 %** match mexicanbr0auth, **2.4 %** match Noysz and **0.7 %** match BossDrk's 0x8055 repository; the rest is Mesa code we moved or reused. Full table, per-file details, an apology for the missing credits in 1.0.0, and a script to re-check it yourself are in the [source repository](https://github.com/FristOneRR-Admin/FristOneRR-Panvk-Source).
-
-> **Credits update (1.1.0):** beta 1.0.0 was released without these credits. That was my mistake as a first-time GitHub user, and I'm sorry. The credits above were added on the day the source code was published.
 
 ---
 
