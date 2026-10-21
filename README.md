@@ -260,6 +260,13 @@ This driver stands on the work of many people. Thank you!
 **Code origin (measured at 1.1.0):** of the 1,669 lines we added on top of Mesa, **67 %** don't appear anywhere else, **3.6 %** match mexicanbr0auth, **2.4 %** match Noysz and **0.7 %** match BossDrk's 0x8055 repository; the rest is Mesa code we moved or reused. Full table, per-file details and a script to re-check it yourself are in the [source repository](https://github.com/FristOneRR-Admin/FristOneRR-Panvk-Source).
 
 ---
+## Support
+
+Support this project on Ko-fi.  
+All donations will go toward improving PanVK and continuing development for all PanVK Mali versions from v6 to v14.
+
+[Support on Ko-fi](https://ko-fi.com/fristonerr)
+
 
 ## License
 
