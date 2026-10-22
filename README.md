@@ -177,7 +177,7 @@ Results on Mali-G57 MC2:
 | Oppo A38 | Helio G85 | Mali-G52 MC2 | ✅ |
 | Xiaomi Redmi 13C | Helio G85 | Mali-G52 MC2 | ✅ |
 | *(unnamed)* | — | Mali-G72 MP3 | ✅ |
-| Samsung F07 | — | — | ✅ |
+| Samsung F07 | Helio G99 | Mali-G57 MC2 | ✅ |
 | *(unnamed)* | Unisoc T606 | Mali-G57 | ❓ |
 | *(unnamed)* | Exynos 2100 | Mali-G78 | ❓ |
 | *(unnamed)* | Exynos 1280 | Mali-G68 | ❓ |
