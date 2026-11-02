@@ -18,7 +18,7 @@ built for Winlator, DXVK and emulators.</b></p>
 > [SHA256](#official-download-and-sha256). Files from other places are not ours.
 
 <p align="center">
-<img alt="latest release v3.6.0" src="https://img.shields.io/badge/latest%20release-v3.6.0-4c1">
+<img alt="latest release v3.7.0" src="https://img.shields.io/badge/latest%20release-v3.7.0-4c1">
 <img alt="license MIT" src="https://img.shields.io/badge/license-MIT-007ec6">
 <img alt="GPU Mali (kbase)" src="https://img.shields.io/badge/GPU-Mali%20%28kbase%29-e05d44">
 <img alt="wrapper 3.1.0" src="https://img.shields.io/badge/wrapper-3.1.0-8a2be2">
@@ -27,7 +27,7 @@ built for Winlator, DXVK and emulators.</b></p>
 
 <p align="center">
 <a href="#about">About</a> |
-<a href="#whats-new-in-360">What's new</a> |
+<a href="#whats-new-in-370">What's new</a> |
 <a href="#supported-apps">Apps</a> |
 <a href="#directx-support">DirectX</a> |
 <a href="#emulators">Emulators</a> |
@@ -45,7 +45,7 @@ Arm's vendor **kbase** kernel driver. Windows games run through Vulkan in **Winl
 **DXVK** and **vkd3d-proton**, and emulators with a custom GPU driver option can use it too,
 without the stock Mali driver.
 
-> **Status: 3.6.0.** It works well on many Mali phones, but it is not a conformant Vulkan
+> **Status: 3.7.0** (based on **Mesa 27**). It works well on many Mali phones, but it is not a conformant Vulkan
 > implementation. Expect bugs and please report them.
 
 ---
@@ -58,8 +58,8 @@ To check that your file is the original, compare its SHA256 with the table below
 
 | File | SHA256 |
 |---|---|
-| `PanVK-FristOneRR-V.3.6.0.zip` (driver) | `b963d57e09aa53a5a43c2608c7df2c85566bcb6b21fcffcba941bda173ab1665` |
-| `libvulkan_panfrost.so` (inside the driver zip) | `4e249068ea774fe244a94519c83e186f9bff3d7884ca3379d75d07613d080fce` |
+| `PanVK-FristOneRR-V.3.7.0.zip` (driver) | `6e9129a3b9db5204c315df2ba5836fb88dea063686a0d11426de992e9e2409c5` |
+| `libvulkan_panfrost.so` (inside the driver zip) | `e6e92930cc70f3fae6d7157c5de71598f27b4b1fdfce89504f6c8b6aeda12801` |
 | `FristOneRR-Wrapper.zip` ([wrapper 3.1.0](https://github.com/FristOneRR-Admin/FristOneRR-Wrapperv1)) | `006fc3d4a48f765b1442e7542f47c58a8ccbb2f63761bed1f943d260a0d6f063` |
 | `wrapper-fristonerr.tzst` (same wrapper, tzst package) | `b61cab354a3400cab5ffcc6c4d9312062bc096777d1f9c08e851456a1355b69a` |
 | `libvulkan_wrapper.so` (inside the wrapper zip / tzst) | `d4aaa03f0f354c3dcbcbc52cd2dfa6899770ba839f3129267eb9894dd1885298` |
@@ -68,23 +68,15 @@ If the SHA256 is different, the file is not ours. Don't install it.
 
 ---
 
-## What's new in 3.6.0
+## What's new in 3.7.0
 
 > **Use this driver with [FristOneRR-wrapper 3.1.0](https://github.com/FristOneRR-Admin/FristOneRR-Wrapperv1/releases).**
-> DXVK 2.7 and newer (including DXVK 3.x) need wrapper 3.1.0; older wrappers stop them from starting.
 
-- **Vulkan 1.1 to 1.4 supported.** Apps and games that need Vulkan 1.1, 1.2, 1.3 or 1.4 can use the driver.
-- **DXVK 3.x works.** DXVK 2.x and 3.x start and render on Valhall phones (G57, G68, G77, G78),
-  including the gplasync, async, Sarek, GPLALL and ARM64EC builds.
-- **DXVK 2.x now also works on Bifrost** (G52, G72, G76), and DXVK 2.7+ / 3.x should work too with wrapper 3.1.0 (not tested yet). Before, these GPUs needed DXVK 1.x.
-- **Games load faster.** The long wait before a game starts (and before the extension list shows in driver apps) is gone.
-- **Less shader stutter with DXVK 2.x/3.x.** The driver now supports graphics pipeline libraries by default, so you no longer need `DXVK_ASYNC=1`.
-- **32-bit games on more phones:** phones without a special memory heap (for example Dimensity 700) no longer crash in 32-bit games.
-- **More games draw correctly.** Better support for effects that D3D10/D3D11 games use
-  (geometry shaders, stream output, wireframe and more), and textures that stayed missing in some games now show up.
-- **DXVK HUD fixed.** The text is no longer squashed into one line, and the frame-time graph works.
-- **Games that measure GPU time** (DXVK HUD, built-in benchmarks) now get real values instead of 0.
-- Everything from 3.5 is included.
+- **Now based on Mesa 27.** The whole driver was moved to the newest Mesa, with a new way of syncing with the kbase kernel driver.
+- **DX9 games as fast as 3.5 again** (on Valhall: G57, G68, G77, G78). 3.6.0 made most DX9 games slower; this is fixed automatically, no setting needed.
+  Example: NFS Most Wanted 2005 runs at **60 FPS** (3.6.0: ~40 FPS).
+- **More stable, cooler phone.** Long play sessions no longer crash, and the phone stays much cooler than with 3.6.0.
+- **All 3.6.0 features are kept** (Vulkan 1.4, DXVK 3.x, geometry shaders, stream output, tessellation, graphics pipeline libraries…), plus 2 more Vulkan extensions from Mesa 27.
 
 ---
 
@@ -95,10 +87,10 @@ If the SHA256 is different, the file is not ours. Don't install it.
 - An app from the [supported apps](#supported-apps) list.
 
 **Steps**
-1. Download `PanVK-FristOneRR-V.3.6.0.zip` from [Releases](../../releases). **Don't unzip it.**
+1. Download `PanVK-FristOneRR-V.3.7.0.zip` from [Releases](../../releases). **Don't unzip it.**
 2. Open Winlator → **Contents / Drivers → Install**, then pick the **zip file itself**.
 3. Open your container's settings (**Edit container**) and set the graphics driver to **Wrapper**.
-   In the wrapper/driver settings, choose **PanVK-FristOneRR-V.3.6.0** as the Vulkan driver.
+   In the wrapper/driver settings, choose **PanVK-FristOneRR-V.3.7.0** as the Vulkan driver.
 4. Install **FristOneRR-wrapper 3.1.0** (see [Wrapper](#wrapper)) and pick a DXVK version (and vkd3d-proton for D3D12 games).
 5. After every driver update, clear the shader cache (DXVK / vkd3d cache files of your games).
 6. Start the container and check it's working: open **AIO Graphics Test → GPU Info**. The GPU should show as **Mali-…** with about **130+ extensions**.
@@ -147,11 +139,12 @@ With **FristOneRR-wrapper 3.1.0**, DXVK (D3D8–D3D11) and vkd3d-proton (D3D12):
 | DXVK | Valhall (G57, G68, G77, G78) | Bifrost (G52, G72, G76) |
 |---|:---:|:---:|
 | DXVK 1.x, async, Sarek | ✅ | ✅ |
-| DXVK 2.0 – 2.6 (incl. gplasync, GPLALL) | ✅ | ✅ |
-| DXVK 2.7 – 3.x (incl. gplasync, ARM64EC) | ✅ with wrapper 3.1.0 | ⚠️ should work with wrapper 3.1.0 (not tested yet) |
+| DXVK 2.0 – 2.4.1 (incl. gplasync, GPLALL) | ✅ | ✅ **Use 2.4.1** (highest working) |
+| DXVK 2.5 – 2.6 | ✅ | ❌ freezes (device lost) |
+| DXVK 2.7 – 3.x (incl. gplasync, ARM64EC) | ✅ with wrapper 3.1.0 | ❌ doesn't start yet |
 
 On Bifrost, D3D11 games run at feature level 10_1 at most: games that need 11_0 won't start.
-D3D10 games: use DXVK 1.x (DXVK 2.x and newer no longer include their own D3D10).
+D3D10 games: use DXVK 1.x (DXVK 2.x and newer no longer include their own D3D10). On Bifrost, D3D10 doesn't render yet.
 
 **Vulkan test programs** (for example the *Vulkan cube* in AIO Graphics Test) are not a target of
 this driver. If they fail, that doesn't mean games won't work. Test with the D3D tests or a real game.
@@ -185,12 +178,14 @@ Results on Mali-G57 MC2:
 |---|---|
 | **PS2** | ✅ **Recommended.** Plays well; some games may stutter. |
 | **Xbox ([XboxMali](https://github.com/msx94302-ops/Xbox-Mali/releases/tag/XBOX-MALI-v0.0.5))** | ✅ **Recommended.** Need for Speed Most Wanted (Black Edition): 720p, resolution scale 2x, steady 30 FPS. |
-| **Switch (Eden Nightly)** | ✅ Optimized since 3.5. Many games playable; pause/resume no longer crashes. |
+| **Switch (Eden Nightly)** | ✅ Many games playable. Set **ASTC Decoding Method = CPU** (correct graphics, a little slower). |
+| **Switch (Lemon)** | ⚠️ Texture bugs (wrong colors / purple). Use Eden for now. |
 | **PS3** | ❌ Not recommended. Beyond what Mali-G57 can do. |
 | **PS4** | ❌ Not recommended. Beyond what Mali-G57 can do. |
 
 **Tips**
 - Clear the emulator's shader cache after installing a new driver.
+- Eden: **ASTC Decoding Method = CPU** for now (GPU can show wrong textures or dark shadows). Texture compression for Switch emulators will be reworked in an upcoming update.
 - The first start of a Switch game compiles shaders; the second start is much faster.
 - Heavy Switch games are limited by the CPU: lowering the resolution doesn't raise the FPS in gameplay.
 - Close other apps (especially Winlator) before playing: Switch games need a lot of free RAM.
@@ -253,7 +248,7 @@ Results on Mali-G57 MC2:
 | Family | GPUs | Status |
 |---|---|---|
 | Valhall v9 (Job Manager) | G57, G68, G77, G78 | ✅ Main target |
-| Bifrost v7 | G52, G76 | ✅ (DXVK 1.x and 2.x; 3.x not tested yet) |
+| Bifrost v7 | G52, G76 | ✅ DXVK 1.x and 2.x up to 2.4.1 |
 | Bifrost v6 | G71, G72 | ✅ Confirmed on G72 MP3 |
 | Valhall 5th gen (CSF) | G610, G615, G710, G720, Immortalis | ❌ Not supported yet. Planned once I have a device to test on. |
 | Midgard | T-series | ❌ Not supported |
@@ -272,6 +267,7 @@ Your phone isn't listed? Try it and tell us the result in an [Issue](../../issue
 | `PANVK_TILER_HEAP_MB` | `512` | Tiler heap limit (16–2048). Lower values may save RAM in heavy games. |
 | `PANVK_STENCIL_LATE` | `0` | `1` fixes black triangles / missing light in some games. Leave it off for other games: it can make them darker and slower. |
 | `PANVK_ATOM_STRIDE` | auto | Set `56` only if the driver doesn't start on your phone (some Exynos and G52 phones). |
+| `FRR_CLIPDIST` | auto | `1` only if a DX9 game shows wrong water reflections or objects showing through mirrors/portals. |
 
 > ⚠️ **Only use the variables in this table.** The driver has other internal switches
 > for development and testing. Setting them can break rendering, lower FPS or crash games.
@@ -282,6 +278,8 @@ Your phone isn't listed? Try it and tell us the result in an [Issue](../../issue
 
 - Some heavy D3D12 games (for example *Resident Evil 2* and *Stray*) don't start or crash while loading. Use the game's D3D11 mode if it has one.
 - Bifrost (G52 / G76 / G72): D3D11 games that need feature level 11_0 don't start (the GPU has no tessellation or geometry shaders).
+- Bifrost (G52 / G76 / G72): DXVK 2.5 and newer don't work yet (use 2.4.1); some DX9 games show black/blue blocks in the sky.
+- Switch: Lemon has texture bugs; Eden needs ASTC Decoding Method = CPU.
 - Some games show a see-through triangle on the right side of menus.
 - Games that ask for 2× MSAA can't create textures (Mali has no 2× mode). Turn off anti-aliasing or use 4×.
 - Heavy games can still be slower than on the stock driver.
